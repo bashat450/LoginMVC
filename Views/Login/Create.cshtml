@@ -1,0 +1,39 @@
+﻿@model CrudMap.Models.LoginModel
+
+@using (Html.BeginForm())
+{
+    @Html.AntiForgeryToken()
+    @Html.ValidationSummary(true)
+
+    <p>Full Name: @Html.TextBoxFor(m => m.FullName)</p>
+    @Html.ValidationMessageFor(m => m.FullName)
+
+    <p>
+        Email ID: @Html.TextBoxFor(m => m.EmailId)
+    </p>
+
+
+    @*<p>Email ID: @Html.TextBoxFor(m => m.EmailId)</p>
+    @Html.ValidationMessageFor(m => m.EmailId)*@
+
+    <p>Password: @Html.PasswordFor(m => m.Password)</p>
+
+    @*<p>Password: @Html.PasswordFor(m => m.Password)</p>
+        @Html.ValidationMessageFor(m => m.Password)*@
+
+    <p>
+        Country:
+        @Html.DropDownListFor(m => m.CountryId, ViewBag.CountryList as List<SelectListItem>, "Select Country")
+    </p>
+    @Html.ValidationMessageFor(m => m.CountryId)
+
+    <input type="submit" value="Save" />
+}
+
+<div>
+    @Html.ActionLink("Back to List", "Login")
+</div>
+
+@section Scripts {
+    @Scripts.Render("~/bundles/jqueryval")
+}

@@ -1,0 +1,31 @@
+﻿@model CrudMap.Models.LoginModel
+
+@if (TempData["Message"] != null)
+{
+    <div style="color: green">@TempData["Message"]</div>
+}
+
+
+@using (Html.BeginForm())
+{
+
+    <p>Email ID: @Html.TextBoxFor(m => m.EmailId)</p>
+    @Html.ValidationMessageFor(m => m.EmailId)
+
+    <p>Password: @Html.PasswordFor(m => m.Password)</p>
+    @Html.ValidationMessageFor(m => m.Password)
+
+    <p>
+        @Html.CheckBox("RememberMe") Remember Me
+    </p>
+
+
+    <input type="submit" value="Sign In" />
+    <input type="button" value="Sign Up" onclick="location.href='@Url.Action("Create", "Login")'" />
+}
+
+
+
+@section Scripts {
+    @Scripts.Render("~/bundles/jqueryval")
+}
