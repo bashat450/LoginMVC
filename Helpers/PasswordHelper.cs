@@ -1,23 +1,26 @@
-﻿using System;
+using System;
 using System.Security.Cryptography;
 using System.Text;
 
 public static class PasswordHelper
 {
-    // Hash password using SHA256
-    public static string HashPassword(string password)
+    public static byte[] HashPasswordAsBytes(string password)
     {
         using (SHA256 sha = SHA256.Create())
         {
-            byte[] bytes = sha.ComputeHash(Encoding.UTF8.GetBytes(password));
-            return Convert.ToBase64String(bytes);
+            return sha.ComputeHash(Encoding.UTF8.GetBytes(password));
         }
     }
 
-    // Verify a plain password against a hashed password
-    public static bool VerifyPassword(string enteredPassword, string storedHash)
+    public static string HashPassword(string password)
     {
-        string enteredHash = HashPassword(enteredPassword);
-        return enteredHash == storedHash;
+        var hashedBytes = HashPasswordAsBytes(password);
+        return Convert.ToBase64String(hashedBytes); // Or store raw bytes if needed
+    }
+
+    public static bool VerifyPassword(string plainPassword, string storedBase64Password)
+    {
+        string hashedInput = HashPassword(plainPassword);
+        return hashedInput == storedBase64Password;
     }
 }
