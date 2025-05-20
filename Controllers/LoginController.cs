@@ -1,8 +1,10 @@
-﻿using System;
+
+using System;
 using System.Collections.Generic;
 using System.Configuration;
 using System.Data;
 using System.Data.SqlClient;
+using System.Linq;
 using System.Web;
 using System.Web.Mvc;
 using CrudMap.Models;
@@ -26,7 +28,6 @@ namespace CrudMap.Controllers
             return View(model);
         }
 
-
         [HttpPost]
         public ActionResult Login(LoginModel model, string RememberMe)
         {
@@ -38,14 +39,18 @@ namespace CrudMap.Controllers
                 con.Open();
                 object result = cmd.ExecuteScalar();
 
-                if (result != null)
+                if (result != null && result is byte[] dbPasswordBytes)
                 {
-                    string dbHashedPassword = result.ToString();
-                    if (PasswordHelper.VerifyPassword(model.Password, dbHashedPassword))
+                    byte[] inputHashedBytes = PasswordHelper.HashPasswordAsBytes(model.Password);
+
+                    // 🔍 Debugging output
+                    Console.WriteLine("DB Password Bytes: " + BitConverter.ToString(dbPasswordBytes));
+                    Console.WriteLine("Input Hashed Bytes: " + BitConverter.ToString(inputHashedBytes));
+
+                    if (dbPasswordBytes.SequenceEqual(inputHashedBytes))
                     {
                         Session["UserEmail"] = model.EmailId;
 
-                        // Remember Me via Cookie
                         if (!string.IsNullOrEmpty(RememberMe) && RememberMe.ToLower() == "true")
                         {
                             HttpCookie cookie = new HttpCookie("UserEmail");
@@ -54,15 +59,13 @@ namespace CrudMap.Controllers
                             Response.Cookies.Add(cookie);
                         }
 
-                        return RedirectToAction("Lists", "Teacher");
+                        return RedirectToAction("Lists", "Teachers");
                     }
                 }
             }
-
             ViewBag.Message = "Invalid Email or Password";
-            return View();
+            return View(model);
         }
-
 
 
         public ActionResult Create()
@@ -82,13 +85,13 @@ namespace CrudMap.Controllers
 
             using (SqlConnection con = new SqlConnection(conStr))
             {
-                string hashedPassword = PasswordHelper.HashPassword(model.Password);
+                byte[] hashedPasswordBytes = PasswordHelper.HashPasswordAsBytes(model.Password);
 
                 SqlCommand cmd = new SqlCommand("SP_InsertRegisterDetails", con);
                 cmd.CommandType = CommandType.StoredProcedure;
                 cmd.Parameters.AddWithValue("@FullName", model.FullName);
                 cmd.Parameters.AddWithValue("@EmailId", model.EmailId);
-                cmd.Parameters.AddWithValue("@Password", model.Password);
+                cmd.Parameters.AddWithValue("@Password", hashedPasswordBytes); // ✅ VARBINARY
                 cmd.Parameters.AddWithValue("@Date", DateTime.Now);
                 cmd.Parameters.AddWithValue("@CountryId", model.CountryId);
 
@@ -103,6 +106,8 @@ namespace CrudMap.Controllers
 
             return RedirectToAction("Login");
         }
+
+
 
 
         private List<SelectListItem> GetCountries()
@@ -129,7 +134,7 @@ namespace CrudMap.Controllers
         public ActionResult Logout()
         {
             Session.Clear();
-            return RedirectToAction("Index");
+            return RedirectToAction("Login");
         }
 
     }
