@@ -1,4 +1,5 @@
-﻿using CrudMap.Models;
+
+using CrudMap.Models;
 using System;
 using System.Collections.Generic;
 using System.IO;
