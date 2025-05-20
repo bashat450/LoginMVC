@@ -1,31 +1,30 @@
-Use College;
-
+Use [COLLEGE];
 -- Table for Countries
 CREATE TABLE Country (
     CountryId INT PRIMARY KEY IDENTITY(1,1),
     CountryName VARCHAR(100) NOT NULL
 );
-
 Insert into Country values ('India'),('ThaiLand');
+Insert into Country values ('China'),('Russia');
+Insert into Country values ('USA'),('UAE');
+
 -- Table for Register
 CREATE TABLE Register (
-    
     FullName VARCHAR(100) NOT NULL,
     EmailId VARCHAR(100) NOT NULL UNIQUE,
-    [Password] VARCHAR(100) NOT NULL,
+    [Password] VARBINARY(64) NOT NULL,
     [Date] DATE NOT NULL,
     CountryId INT,  -- Foreign key
 
     FOREIGN KEY (CountryId) REFERENCES Country(CountryId)
 );
 
-Insert Into Register Values('Komal Chauhan','komal@gmail.com','komal123','2025-01-15',1),
-('Rinkle Solanki','rinkle@gmail.com','rinkle123','2025-02-12',1);
-Insert into Register Values ('Roshni Joshi','roshni@gmail.com','roshni123','2024-06-16',2),
-('Pooja Jain','pooja@gmail.com','pooja123','2024-08-23',2);
+Insert Into Register Values('Komal Chauhan','komal@gmail.com',CONVERT(varbinary, 'komal123'),'2025-01-15',1),
+('Rinkle Solanki','rinkle@gmail.com',CONVERT(varbinary,'rinkle123'),'2025-02-12',1);
+Insert into Register Values ('Roshni Joshi','roshni@gmail.com',CONVERT(varbinary,'roshni123'),'2024-06-16',2),
+('Pooja Jain','pooja@gmail.com',CONVERT(varbinary,'pooja123'),'2024-08-23',2);
 
-
--- -----------------
+-- ------------------------------------------------
 CREATE PROCEDURE SP_GetLoginDetails
     @EmailId VARCHAR(100),
     @Password VARCHAR(100)
@@ -55,11 +54,11 @@ Execute SP_GetLoginDetails 'komal@gmail.com','komal123';
 -- Incorrect Information
 Execute SP_GetLoginDetails 'komal@gmail.com','komal1234';
 
-
+----/////////////////////////////////////////////////
 CREATE PROCEDURE SP_InsertRegisterDetails
     @FullName VARCHAR(100),
     @EmailId VARCHAR(100),
-    @Password VARCHAR(100),
+    @Password VARBINARY(64),
     @Date DATE,
     @CountryId INT
 AS
@@ -78,20 +77,29 @@ BEGIN
         SELECT 'Registration successful.' AS Message;
     END
 END
+--------------Call Insert values
+
+DECLARE @FullName VARCHAR(100) = 'Sheetal Agarwal';
+DECLARE @EmailId VARCHAR(100) = 'sheetal@gmail.com';
+DECLARE @Password VARBINARY(64) = CONVERT(VARBINARY(64), 'sheetal123');
+DECLARE @Date DATE = '2025-06-19';
+DECLARE @CountryId INT = 4;
 
 EXEC SP_InsertRegisterDetails 
-    @FullName = 'Deepak Jadiwal', 
-    @EmailId = 'deepak@gmail.com', 
-    @Password = 'deepak123', 
-    @Date = '2025-06-19', 
-    @CountryId = 2;
+    @FullName = @FullName, 
+    @EmailId = @EmailId, 
+    @Password = @Password, 
+    @Date = @Date, 
+    @CountryId = @CountryId;
+
+
 
 ------------------------------
 
 CREATE PROCEDURE SP_UpdateRegisterDetails
     @EmailId VARCHAR(100),
     @FullName VARCHAR(100),
-    @Password VARCHAR(100),
+    @Password varbinary(100),
     @Date DATE,
     @CountryId INT
 AS
@@ -115,44 +123,14 @@ BEGIN
         SELECT 'No user found with the provided EmailId.' AS Message;
     END
 END
-
+--////////////// Call Update SP
+DECLARE @Password VARBINARY(64) = HASHBYTES('SHA2_256', 'sheetal123');
 
 EXEC SP_UpdateRegisterDetails 
-    @EmailId = 'deepak@gmail.com',
-    @FullName = 'Deepak Jadiwal',
-    @Password = 'deepak123',
+    @EmailId = 'sheetal@gmail.com',
+    @FullName = 'Sheetal Singh',
+    @Password = @Password,
     @Date = '2025-05-20',
     @CountryId = 2;
-
-
-
--- Drop Password column and recreate it as VARBINARY if not already
-ALTER TABLE Register DROP COLUMN [Password];
-
-ALTER TABLE Register ALTER COLUMN [Password] VARBINARY(64) NOT NULL;
-
-
-ALTER TABLE Register ADD [Password] VARBINARY(64) NULL;
-
-UPDATE Register 
-SET Password = CONVERT(varbinary, 'komal123') 
-WHERE EmailId = 'komal@gmail.com';
-
-UPDATE Register 
-SET Password = CONVERT(varbinary, 'rinkle123') 
-WHERE EmailId = 'rinkle@gmail.com';
-
-UPDATE Register 
-SET Password = CONVERT(varbinary, 'roshni123') 
-WHERE EmailId = 'roshni@gmail.com';
-
-UPDATE Register 
-SET Password = CONVERT(varbinary, 'Pooja123') 
-WHERE EmailId = 'Pooja@gmail.com';
-
-UPDATE Register 
-SET Password = CONVERT(varbinary, 'deepak123') 
-WHERE EmailId = 'deepak@gmail.com';
-
 
 
