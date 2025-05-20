@@ -55,7 +55,7 @@ Execute SP_GetLoginDetails 'komal@gmail.com','komal123';
 Execute SP_GetLoginDetails 'komal@gmail.com','komal1234';
 
 ----/////////////////////////////////////////////////
-CREATE PROCEDURE SP_InsertRegisterDetails
+Alter PROCEDURE SP_InsertRegisterDetails
     @FullName VARCHAR(100),
     @EmailId VARCHAR(100),
     @Password VARBINARY(64),
@@ -79,9 +79,9 @@ BEGIN
 END
 --------------Call Insert values
 
-DECLARE @FullName VARCHAR(100) = 'Sheetal Agarwal';
-DECLARE @EmailId VARCHAR(100) = 'sheetal@gmail.com';
-DECLARE @Password VARBINARY(64) = CONVERT(VARBINARY(64), 'sheetal123');
+DECLARE @FullName VARCHAR(100) = 'Divya Agarwal';
+DECLARE @EmailId VARCHAR(100) = 'divya@gmail.com';
+DECLARE @Password VARBINARY(64) = CONVERT(VARBINARY(64), 'divyal123');
 DECLARE @Date DATE = '2025-06-19';
 DECLARE @CountryId INT = 4;
 
@@ -132,5 +132,25 @@ EXEC SP_UpdateRegisterDetails
     @Password = @Password,
     @Date = '2025-05-20',
     @CountryId = 2;
+
+
+	-- Re-hash all passwords using SHA-256 (only if you trust the plaintext for demo users)
+UPDATE Register
+SET [Password] = HASHBYTES('SHA2_256', 'komal123')
+WHERE EmailId = 'komal@gmail.com';
+
+-- Repeat for others
+UPDATE Register
+SET [Password] = HASHBYTES('SHA2_256', 'rinkle123')
+WHERE EmailId = 'rinkle@gmail.com';
+
+UPDATE Register
+SET [Password] = HASHBYTES('SHA2_256', 'roshni123')
+WHERE EmailId = 'roshni@gmail.com';
+
+UPDATE Register
+SET [Password] = HASHBYTES('SHA2_256', 'pooja123')
+WHERE EmailId = 'pooja@gmail.com';
+
 
 
