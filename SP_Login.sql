@@ -132,10 +132,27 @@ ALTER TABLE Register DROP COLUMN [Password];
 ALTER TABLE Register ALTER COLUMN [Password] VARBINARY(64) NOT NULL;
 
 
-
-
-
-
 ALTER TABLE Register ADD [Password] VARBINARY(64) NULL;
+
+UPDATE Register 
+SET Password = CONVERT(varbinary, 'komal123') 
+WHERE EmailId = 'komal@gmail.com';
+
+UPDATE Register 
+SET Password = CONVERT(varbinary, 'rinkle123') 
+WHERE EmailId = 'rinkle@gmail.com';
+
+UPDATE Register 
+SET Password = CONVERT(varbinary, 'roshni123') 
+WHERE EmailId = 'roshni@gmail.com';
+
+UPDATE Register 
+SET Password = CONVERT(varbinary, 'Pooja123') 
+WHERE EmailId = 'Pooja@gmail.com';
+
+UPDATE Register 
+SET Password = CONVERT(varbinary, 'deepak123') 
+WHERE EmailId = 'deepak@gmail.com';
+
 
 
