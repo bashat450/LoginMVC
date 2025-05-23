@@ -10,7 +10,7 @@ Insert into Country values ('USA'),('UAE');
 
 -- Table for Register
 CREATE TABLE Register (
-    FullName VARCHAR(100) NOT NULL,
+    UserName VARCHAR(100) NOT NULL,
     EmailId VARCHAR(100) NOT NULL UNIQUE,
     [Password] VARBINARY(64) NOT NULL,
     [Date] DATE NOT NULL,
@@ -35,7 +35,7 @@ BEGIN
     BEGIN
         -- Return user details with country name
         SELECT 
-            R.FullName,
+            R.UserName,
             R.EmailId,
             R.[Date],
             C.CountryName
@@ -56,7 +56,7 @@ Execute SP_GetLoginDetails 'komal@gmail.com','komal1234';
 
 ----/////////////////////////////////////////////////
 Alter PROCEDURE SP_InsertRegisterDetails
-    @FullName VARCHAR(100),
+    @UserName VARCHAR(100),
     @EmailId VARCHAR(100),
     @Password VARBINARY(64),
     @Date DATE,
@@ -71,22 +71,22 @@ BEGIN
     ELSE
     BEGIN
         -- Insert new user details
-        INSERT INTO Register (FullName, EmailId, [Password], [Date], CountryId)
-        VALUES (@FullName, @EmailId, @Password, @Date, @CountryId);
+        INSERT INTO Register (UserName, EmailId, [Password], [Date], CountryId)
+        VALUES (@userName, @EmailId, @Password, @Date, @CountryId);
 
         SELECT 'Registration successful.' AS Message;
     END
 END
 --------------Call Insert values
 
-DECLARE @FullName VARCHAR(100) = 'Divya Agarwal';
+DECLARE @UserName VARCHAR(100) = 'Divya Agarwal';
 DECLARE @EmailId VARCHAR(100) = 'divya@gmail.com';
 DECLARE @Password VARBINARY(64) = CONVERT(VARBINARY(64), 'divyal123');
 DECLARE @Date DATE = '2025-06-19';
 DECLARE @CountryId INT = 4;
 
 EXEC SP_InsertRegisterDetails 
-    @FullName = @FullName, 
+    @UserName = @FullName, 
     @EmailId = @EmailId, 
     @Password = @Password, 
     @Date = @Date, 
@@ -98,7 +98,7 @@ EXEC SP_InsertRegisterDetails
 
 CREATE PROCEDURE SP_UpdateRegisterDetails
     @EmailId VARCHAR(100),
-    @FullName VARCHAR(100),
+    @UserName VARCHAR(100),
     @Password varbinary(100),
     @Date DATE,
     @CountryId INT
@@ -110,7 +110,7 @@ BEGIN
         -- Perform the update
         UPDATE Register
         SET 
-            FullName = @FullName,
+            UserName = @UserName,
             [Password] = @Password,
             [Date] = @Date,
             CountryId = @CountryId
@@ -128,7 +128,7 @@ DECLARE @Password VARBINARY(64) = HASHBYTES('SHA2_256', 'sheetal123');
 
 EXEC SP_UpdateRegisterDetails 
     @EmailId = 'sheetal@gmail.com',
-    @FullName = 'Sheetal Singh',
+    @UserName = 'Sheetal Singh',
     @Password = @Password,
     @Date = '2025-05-20',
     @CountryId = 2;
